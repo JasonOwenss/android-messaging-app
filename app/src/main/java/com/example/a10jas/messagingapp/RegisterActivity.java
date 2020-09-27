@@ -10,6 +10,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -31,6 +33,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText editTextUsername;
     private EditText editTextPassword;
     private Button registerButton;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,7 @@ public class RegisterActivity extends AppCompatActivity {
         this.editTextUsername = this.findViewById(R.id.editTextUsername);
         this.editTextPassword = this.findViewById(R.id.editTextPassword);
         this.registerButton = this.findViewById(R.id.registerButton);
+        this.progressBar = findViewById(R.id.progressBar);
         this.registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,6 +60,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void register(View v){
+        this.progressBar.setVisibility(View.VISIBLE);
         final String username = this.editTextUsername.getText().toString();
         final String password = this.editTextPassword.getText().toString();
 
@@ -72,6 +77,15 @@ public class RegisterActivity extends AppCompatActivity {
                             JSONObject Jobj = new JSONObject(response);
                             if (Jobj.has("data")){
                                 System.out.println("That username is taken");
+                                String error = Jobj.getString("data");
+                                CharSequence text = error;
+                                int duration = Toast.LENGTH_LONG;
+                                Toast toast = Toast.makeText(RegisterActivity.this, text, duration);
+                                toast.show();
+
+                                RegisterActivity.this.editTextUsername.getText().clear();
+                                RegisterActivity.this.editTextPassword.getText().clear();
+                                RegisterActivity.this.progressBar.setVisibility(View.INVISIBLE);
                             }else{
                                 Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                                 int userid = Jobj.getInt("id");
@@ -79,6 +93,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 intent.putExtra(USERID, userid);
                                 RegisterActivity.this.editTextUsername.getText().clear();
                                 RegisterActivity.this.editTextPassword.getText().clear();
+                                RegisterActivity.this.progressBar.setVisibility(View.INVISIBLE);
                                 setResult(RESULT_OK, intent);
                                 finish();
                             }

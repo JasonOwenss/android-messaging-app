@@ -88,13 +88,22 @@ public class FriendsActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         System.out.println(response);
                         try{
-                            ArrayList<JSONObject> messageData = new ArrayList<>();
-                            JSONArray dataArray = new JSONObject(response).getJSONArray("data");
-                            for (int i=0;i<dataArray.length();i++){
-                                FriendsActivity.this.friendRequests.add(dataArray.getJSONObject(i));
-                                messageData.add(dataArray.getJSONObject(i));
+                            JSONObject Jobj = new JSONObject(response);
+                            if(Jobj.get("data").equals("error")){
+                                CharSequence text = "Server Error: error loading friend requests";
+                                int duration = Toast.LENGTH_LONG;
+                                Toast toast = Toast.makeText(FriendsActivity.this, text, duration);
+                                toast.show();
+                            }else{
+                                ArrayList<JSONObject> messageData = new ArrayList<>();
+                                JSONArray dataArray = new JSONObject(response).getJSONArray("data");
+                                for (int i=0;i<dataArray.length();i++){
+                                    FriendsActivity.this.friendRequests.add(dataArray.getJSONObject(i));
+                                    messageData.add(dataArray.getJSONObject(i));
+                                }
+                                loadFriendRequests(messageData);
                             }
-                            loadFriendRequests(messageData);
+
 
                         }catch (JSONException e){
                             System.out.println(e);
@@ -285,16 +294,14 @@ public class FriendsActivity extends AppCompatActivity {
 
     private class onSearchFriendClickListener implements View.OnClickListener{
 
-        //String searchName;
 
         public onSearchFriendClickListener(){
-            //this.searchName = FriendsActivity.this.editTextSearchName.getText().toString();
+
         }
 
         @Override
         public void onClick(View v) {
             String searchName = FriendsActivity.this.editTextSearchName.getText().toString();
-            System.out.printf("adresseeName is %s\n",searchName);
 
             try{
                 if (searchName.length() < 1){
@@ -338,7 +345,6 @@ public class FriendsActivity extends AppCompatActivity {
                 .addListener(new WebSocketAdapter() {
                     // A text message arrived from the server.
                     public void onTextMessage(WebSocket websocket, String message) {
-                        System.out.println(message);
                         try {
                             JSONObject JSobj = new JSONObject(message);
                             String msgType = JSobj.getString("type");
@@ -354,12 +360,17 @@ public class FriendsActivity extends AppCompatActivity {
                                     loadFriendRequests(FriendsActivity.this.friendRequests);
                                     break;
                                 case("error"):
-                                    String error = JSobj.getString("data");
-                                    CharSequence text = error;
-                                    int duration = Toast.LENGTH_LONG;
+                                    final String error = JSobj.getString("data");
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            CharSequence text = error;
+                                            int duration = Toast.LENGTH_LONG;
 
-                                    Toast toast = Toast.makeText(FriendsActivity.this, text, duration);
-                                    toast.show();
+                                            Toast toast = Toast.makeText(FriendsActivity.this, text, duration);
+                                            toast.show();
+                                        }
+                                    });
                             }
 
                         } catch(org.json.JSONException e){

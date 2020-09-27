@@ -352,7 +352,6 @@ public class MainActivity extends AppCompatActivity {
                 .addListener(new WebSocketAdapter() {
                     // A text message arrived from the server.
                     public void onTextMessage(WebSocket websocket, String message) {
-                        System.out.println(message);
                         try {
                             JSONObject JSobj = new JSONObject(message);
                             String msgType = JSobj.getString("type");

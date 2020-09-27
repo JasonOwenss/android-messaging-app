@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -30,6 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText editTextUsername;
     private EditText editTextPassword;
     private Button registerButton;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
         this.editTextUsername = findViewById(R.id.editTextUsername);
         this.editTextPassword = findViewById(R.id.editTextPassword);
         this.registerButton = findViewById(R.id.registerButton);
+        this.progressBar = findViewById(R.id.progressBar);
         this.registerButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -59,6 +63,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void authenticate(View v){
+        progressBar.setVisibility(View.VISIBLE);
 
         final String username = this.editTextUsername.getText().toString();
         final String password = this.editTextPassword.getText().toString();
@@ -76,6 +81,15 @@ public class LoginActivity extends AppCompatActivity {
                             JSONObject Jobj = new JSONObject(response);
                             if (Jobj.has("data")){
                                 System.out.println("That user does not exist");
+                                String error = Jobj.getString("data");
+                                CharSequence text = "That username and password combination does not exist";
+                                int duration = Toast.LENGTH_LONG;
+                                Toast toast = Toast.makeText(LoginActivity.this, text, duration);
+                                toast.show();
+
+                                LoginActivity.this.editTextUsername.getText().clear();
+                                LoginActivity.this.editTextPassword.getText().clear();
+                                LoginActivity.this.progressBar.setVisibility(View.INVISIBLE);
                             }else{
                                 Intent intent = new Intent(LoginActivity.this, ChatListActivity.class);
                                 int userid = Jobj.getInt("id");
@@ -83,6 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                                 intent.putExtra(USERID, userid);
                                 LoginActivity.this.editTextUsername.getText().clear();
                                 LoginActivity.this.editTextPassword.getText().clear();
+                                LoginActivity.this.progressBar.setVisibility(View.INVISIBLE);
                                 startActivity(intent);
                             }
                         }catch(JSONException e){

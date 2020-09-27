@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +55,7 @@ public class ChatListActivity extends AppCompatActivity {
     private Button buttonFriendRequests;
     private RequestQueue queue;
     private LinearLayout chatListLinearLayout;
+    private ProgressBar progressBar;
     public final static String USERNAME = "com.example.a10jas.messagingapp.USERNAME";
     public final static String USERID = "com.example.a10jas.messagingapp.USERID";
     public final static String ADRESSEENAME = "com.example.a10jas.messagingapp.ADRESSEENAME";
@@ -76,6 +78,7 @@ public class ChatListActivity extends AppCompatActivity {
 
 
         this.chatListLinearLayout = findViewById(R.id.chatListLinearLayout);
+        this.progressBar = findViewById(R.id.progressBar);
         buttonFriendRequests = findViewById(R.id.buttonFriendRequests);
         buttonFriendRequests.setOnClickListener(new friendRequestButtonOnClickListener());
 
@@ -107,14 +110,22 @@ public class ChatListActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         System.out.println(response);
                         try{
-                            ArrayList<JSONObject> chatData = new ArrayList<>();
-                            JSONArray dataArray = new JSONObject(response).getJSONArray("data");
-                            for (int i=0;i<dataArray.length();i++){
-                                ChatListActivity.this.chats.add(dataArray.getJSONObject(i));
-                                chatData.add(dataArray.getJSONObject(i));
+                            JSONObject Jobj = new JSONObject(response);
+                            if(Jobj.has("error")){
+                                String error = Jobj.getString("error");
+                                CharSequence text = "Server Error: error loading friends";
+                                int duration = Toast.LENGTH_LONG;
+                                Toast toast = Toast.makeText(ChatListActivity.this, text, duration);
+                                toast.show();
+                            }else{
+                                ArrayList<JSONObject> chatData = new ArrayList<>();
+                                JSONArray dataArray = new JSONObject(response).getJSONArray("data");
+                                for (int i=0;i<dataArray.length();i++){
+                                    ChatListActivity.this.chats.add(dataArray.getJSONObject(i));
+                                    chatData.add(dataArray.getJSONObject(i));
+                                }
+                                loadChats(chatData);
                             }
-                            loadChats(chatData);
-
 
                         }catch (JSONException e){
                             System.out.println(e);
@@ -254,7 +265,6 @@ public class ChatListActivity extends AppCompatActivity {
                 .addListener(new WebSocketAdapter() {
                     // A text message arrived from the server.
                     public void onTextMessage(WebSocket websocket, String message) {
-                        System.out.println(message);
                         try {
                             JSONObject JSobj = new JSONObject(message);
                             String msgType = JSobj.getString("type");
