@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -199,20 +200,26 @@ public class MainActivity extends AppCompatActivity {
 
         for(int i=0;i<messageData.size();i++){
             TextView textView2 = new TextView(MainActivity.this);
+            textView2.setBackgroundResource(R.drawable.tags_rounded_corners);
+            GradientDrawable gd = (GradientDrawable) textView2.getBackground();
+
             try {
                 textView2.setText(messageData.get(i).getString("message_content"));
                 if(messageData.get(i).getInt("userid") == this.userid){
                     textView2.setLayoutParams(layoutParams);
+                    gd.setColor(Color.parseColor("#34eba4"));
                 }else{
                     textView2.setLayoutParams(layoutParams2);
+                    gd.setColor(Color.parseColor("#fa78ae"));
                 }
             }catch (JSONException e){
                 textView2.setText("no username");
             }
 
             textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-            textView2.setBackgroundColor(0xffffdbdb); // hex color 0xAARRGGBB
+            //textView2.setBackgroundColor(0xffffdbdb); // hex color 0xAARRGGBB
             linMessageLayout.addView(textView2);
+            textView2.setMaxWidth((int)((((LinearLayout)textView2.getParent())).getWidth()*0.7));
         }
 
         final ScrollView scrollView = MainActivity.this.findViewById(R.id.messageContainer);
@@ -230,7 +237,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 final LinearLayout linMessageLayout = MainActivity.this.findViewById(R.id.linMessageLayout);
-                TextView textView2 = new TextView(MainActivity.this);
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.RIGHT;
@@ -239,16 +245,22 @@ public class MainActivity extends AppCompatActivity {
                         LinearLayout.LayoutParams.WRAP_CONTENT);
                 layoutParams2.gravity = Gravity.LEFT;
                 layoutParams2.setMargins(10, 10, 10, 10); // (left, top, right, bottom)
+
+                TextView textView2 = new TextView(MainActivity.this);
+                textView2.setBackgroundResource(R.drawable.tags_rounded_corners);
+                GradientDrawable gd = (GradientDrawable) textView2.getBackground();
+
                 if(userid == MainActivity.this.userid){
                     textView2.setLayoutParams(layoutParams);
+                    gd.setColor(Color.parseColor("#34eba4"));
                 }else{
                     textView2.setLayoutParams(layoutParams2);
+                    gd.setColor(Color.parseColor("#fa78ae"));
                 }
                 textView2.setText(msg);
                 textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-                textView2.setBackgroundColor(0xffffdbdb); // hex color 0xAARRGGBB
                 linMessageLayout.addView(textView2);
-
+                textView2.setMaxWidth((int)((((LinearLayout)textView2.getParent())).getWidth()*0.7));
 
                 final ScrollView scrollView = MainActivity.this.findViewById(R.id.messageContainer);
 
