@@ -3,6 +3,9 @@ package com.example.a10jas.messagingapp;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -153,7 +156,7 @@ public class ChatListActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT);
                 layoutParams.gravity = Gravity.LEFT;
-                layoutParams.setMargins(10, 10, 10, 10); // (left, top, right, bottom)
+                //layoutParams.setMargins(5, 5, 5, 5); // (left, top, right, bottom)
 
                 chatListLinearLayout.removeAllViews();
 
@@ -170,8 +173,15 @@ public class ChatListActivity extends AppCompatActivity {
                     }
                     textView2.setClickable(true);
                     textView2.setOnClickListener(new onChatClickListener(textView2.getText().toString(),textView2.getId()));
-                    textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-                    textView2.setBackgroundColor(0xffffdbdb); // hex color 0xAARRGGBB
+                    textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
+                    textView2.setPadding(25,25,25,25);
+                    textView2.setBackgroundResource(R.drawable.textlines);
+                    LayerDrawable ld = (LayerDrawable) textView2.getBackground();
+                    textView2.setBackground(ld);
+                    TypedValue outValue = new TypedValue();
+                    ChatListActivity.this.getTheme().resolveAttribute(
+                            android.R.attr.selectableItemBackground, outValue, true);
+                    textView2.setForeground(getDrawable(outValue.resourceId));
                     chatListLinearLayout.addView(textView2);
                 }
             }

@@ -333,7 +333,10 @@ public class FriendsActivity extends AppCompatActivity {
     }
 
     private void close(){
-        this.ws.disconnect();
+        if(this.ws != null){
+            this.ws.disconnect();
+        }
+
     }
 
     private WebSocket connect() throws IOException, WebSocketException

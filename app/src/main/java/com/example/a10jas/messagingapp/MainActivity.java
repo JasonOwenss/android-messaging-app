@@ -338,7 +338,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void close(){
-        this.ws.disconnect();
+        if(this.ws != null){
+            this.ws.disconnect();
+        }
+
     }
     /**
      * Connect to the server.
@@ -378,7 +381,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
-        ws.disconnect();
+        this.close();
         Intent intent = new Intent();
         intent.putExtra(USERNAME, this.username);
         intent.putExtra(USERID, this.userid);
